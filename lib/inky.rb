@@ -34,9 +34,13 @@ module Inky
     def erb_handler
       @erb_handler ||= ActionView::Template.registered_template_handler(:erb)
     end
+    
+    def slim_handler
+      @slim_handler ||= ActionView::Template.registered_template_handler(:slim)
+    end  
 
-    def call(template)
-      compiled_source = erb_handler.call(template)
+    def call(template, format = :slim)
+      compiled_source = send("#{format}_handler").call(template)
       if template.formats.include?(:inky)
         "Inky::InkyTemplate.to_html(begin;#{compiled_source};end).html_safe"
       else
